@@ -1,0 +1,84 @@
+// Fonts
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+// Variables
+@import 'variables';
+
+// Bootstrap
+// @import '~bootstrap/scss/bootstrap';
+
+// Element-UI
+@import "~element-ui/lib/theme-chalk/index.css";
+@import '~element-ui/lib/theme-chalk/display.css';
+
+#egg {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.t {
+  &-mb10 {
+    margin-bottom: 10px;
+  }
+
+  &-pd10 {
+    padding: 10px;
+  }
+
+  &-pd20 {
+    padding: 20px;
+  }
+
+  // 文字居中
+  &-txtC {
+    text-align: center;
+  }
+
+  &-wFull {
+    width: 100%;
+  }
+
+  &-green {
+    color: #67C23A;
+  }
+
+  &-grey {
+    color: #909399;
+  }
+  &-red {
+    color: #F56C6C;
+  }
+}
+.el-main {
+  padding: 0;
+}
+
+.t {
+  &-table {
+    &-tips {
+      color: #999999;
+      font-size: 9px;
+    }
+  }
+  &-create-btn {
+    position: fixed;
+    right: 40px;
+    bottom: 40px;
+  }
+}
+
+@media screen and (min-width: 993px)  {
+  .t-detail>div {
+    width: 50%;
+    max-width: 600px;
+  }
+}
+@media screen and (min-width: 769px) and (max-width: 992px) {
+  .t-detail>div {
+    width: 75%;
+  }
+}
+@media screen and (max-width: 768px) {
+  .t-detail>div {
+    width: 100%;
+  }
+}
