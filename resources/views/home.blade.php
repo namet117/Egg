@@ -1,6 +1,6 @@
-@extends('egg.layout')
+@extends('layout.index')
 
-@section('content')
+@section('body')
   <el-container>
     <el-main>
       <el-table
@@ -129,18 +129,6 @@
           <template slot-scope="scope">
             <el-button @click="handleEdit(scope.row)" type="primary" icon="el-icon-edit" size="mini" circle></el-button>
             <el-button @click="handleDelete(scope.row.delete)" type="danger" icon="el-icon-delete" size="mini" circle ></el-button>
-{{--            <el-button @click="handleEdit(scope.row)" type="text" size="mini" icon="el-icon-edit">编辑</el-button>--}}
-{{--            <br>--}}
-{{--            <el-popconfirm--}}
-{{--              confirm-button-text='确认'--}}
-{{--              cancel-button-text='算了'--}}
-{{--              icon="el-icon-info"--}}
-{{--              icon-color="red"--}}
-{{--              title="确认删除此持仓信息？"--}}
-{{--              @on-confirm="handleDelete(scope.row.delete)"--}}
-{{--            >--}}
-{{--              <el-button slot="reference" type="text" size="mini" icon="el-icon-delete" @click="handleDelete(scope.row.delete)">删除</el-button>--}}
-{{--            </el-popconfirm>--}}
           </template>
         </el-table-column>
       </el-table>
@@ -150,8 +138,6 @@
   <el-dialog :title="dialogTitle" :visible.sync="isShowDialog" :close-on-click-modal="false" class="t-detail">
     <el-form ref="stockDetail" label-position="right" label-width="80px" :model="stockDetail" :rules="stockRules" status-icon>
       <el-form-item label="名称" prop="name">
-{{--        <el-autocomplete v-model="stockDetail.name" @select="handleSelectFund"></el-autocomplete>--}}
-{{--        <el-input maxlength="50" show-word-limit v-model="stockDetail.name"></el-input>--}}
         <el-select
           v-model="stockDetail.name"
           filterable
@@ -201,7 +187,7 @@
   </div>
 @endsection
 
-@section('custom_script')
+@section('custom_footer')
   <script>
     window.originalStocks = '{!! json_encode($stocks) !!}';
     window.storeUrl = '{{ route('egg.userStock.store') }}';
@@ -209,5 +195,5 @@
     window.tRealDate = '{{ $t_real_date }}';
     window.tEstimateDate = '{{ $t_estimate_date }}';
   </script>
-  <script src="{{ mix('js/egg/index.js') }}"></script>
+  <script src="{{ mix('js/home.js') }}"></script>
 @endsection

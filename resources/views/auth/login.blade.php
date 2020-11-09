@@ -1,20 +1,5 @@
 @extends('layout.index')
 
-@section('custom_style')
-  <link rel="stylesheet" href="/plugins/layui/css/layui.css">
-  <link rel="stylesheet" href="/plugins/layui/css/layui.mobile.css">
-  <script src="/plugins/layui/layui.all.js"></script>
-  <style>
-    .layui-form {
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .login-form-button {
-      margin-top: 40px;
-      text-align: center;
-    }
-  </style>
-@endsection
 @section('body')
   <div class="layui-container">
     <div class="layui-row" style="margin-top: 80px;">
@@ -33,16 +18,4 @@
       </form>
     </div>
   </div>
-@endsection
-
-@section('custom_script')
-  <script !src="">
-    !function() {
-      var layer = layui.layer;
-
-      @if($error ?? '')
-      layer.msg('{{ $error ?? '' }}', {icon: 5});
-      @endif
-    }();
-  </script>
 @endsection

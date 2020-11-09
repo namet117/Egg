@@ -7,13 +7,12 @@
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', '🐓🥚🥚')</title>
-  <script src="{{ mix('js/app.js') }}"></script>
   <link rel="stylesheet" href="{{ mix('css/app.css') }}">
   <link rel="apple-touch-icon-precomposed" sizes="57x57" href="{{ asset('images/icon/icon-57.jpg') }}">
   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ asset('images/icon/icon-72.jpg') }}">
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ asset('images/icon/icon-114.jpg') }}">
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ asset('images/icon/icon-144.jpg') }}">
-  @section('custom_style')
+  @section('custom_header')
   @show
 </head>
 <body>
@@ -22,7 +21,8 @@
 </div>
 
 {{--底部JS代码--}}
-@section('custom_script')
+<script src="{{ mix('js/app.js') }}"></script>
+@section('custom_footer')
   <script>
     if (document.getElementById('egg')) {
       var app = new Vue({el: '#egg'});

@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('egg:refresh_user_stock')->everyTwoMinutes()->withoutOverlapping(60);
+        $schedule->command('egg:refresh_user_stock')->everyMinute()->withoutOverlapping(60);
     }
 
     /**

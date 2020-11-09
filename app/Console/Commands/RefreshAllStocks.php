@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Egg\Models\Stock;
+use App\Http\Models\Stock;
 use Illuminate\Console\Command;
 
 class RefreshAllStocks extends Command
