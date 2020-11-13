@@ -17,7 +17,7 @@ class Authenticate extends Middleware
     {
         $current_full_path = $request->path()
             . ($request->getQueryString() ? ('?' . $request->getQueryString()) : '');
-        $current_full_path = $current_full_path ? "/{$current_full_path}" : '/';
+        $current_full_path = ($current_full_path && $current_full_path !== '/') ? "/{$current_full_path}" : '/';
         $request->session()->put('login_redirect', $current_full_path);
         if (!$request->expectsJson()) {
             return route('login');

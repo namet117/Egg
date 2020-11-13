@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\{Route, Auth};
 |
 */
 
-Route::middleware(['auth'])->name('egg.')->namespace('\App\Egg\Controllers')->group(function () {
+Route::middleware(['auth'])->name('egg.')->group(function () {
     // 首页
     Route::get('/', 'StockController@index')->name('home');
     // 基金的CURD
@@ -24,5 +24,5 @@ Route::middleware(['auth'])->name('egg.')->namespace('\App\Egg\Controllers')->gr
 
 // 登录
 // Auth::routes();
-Route::get('/login', 'Auth\LoginController@showLoginForm');
-Route::post('/login', 'Auth\LoginController@login')->name('login');
+Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
+Route::post('/login', 'Auth\LoginController@login')->name('doLogin');

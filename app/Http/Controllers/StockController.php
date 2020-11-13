@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Models\Stock;
 use App\Http\Models\UserStock;
 use App\Http\Requests\UserStockPost;
-use App\Egg\Services\StockService;
+use App\Services\StockService;
 use App\Utils\Calc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class StockController extends Controller
 {
     /**
-     * @var \App\Egg\Services\StockService
+     * @var \App\Services\StockService
      */
     private $stockService;
 
@@ -52,7 +52,7 @@ class StockController extends Controller
             } elseif (!isset($real_date[$row['real_date']])) {
                 $real_date[$row['real_date']] = 1;
             } else {
-                $real_date[$row['real_date']] ++;
+                $real_date[$row['real_date']]++;
             }
             // 持仓成本金额
             $row['cost_amount'] = (float)bcmul($row['cost'], $row['hold_num'], 2);

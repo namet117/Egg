@@ -11,24 +11,38 @@
       font-size: 9px;
     }
   }
+
   &-create-btn {
     position: fixed;
     right: 40px;
     bottom: 40px;
   }
-}
 
-@media screen and (min-width: 993px)  {
-  .t-detail>div {
-    width: 50%;
-    max-width: 600px;
+  &-login {
+    margin: 20vh auto 0;
+    width: 90%;
+    max-width: 50vh;
+    min-width: 50%;
+
+    &-submit {
+      width: 100%;
+    }
   }
 }
+
+@media screen and (min-width: 993px) {
+  .t-detail>div {
+    width: 50%;
+    max-width: 60vh;
+  }
+}
+
 @media screen and (min-width: 769px) and (max-width: 992px) {
   .t-detail>div {
     width: 75%;
   }
 }
+
 @media screen and (max-width: 768px) {
   .t-detail>div {
     width: 100%;

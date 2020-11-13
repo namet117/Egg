@@ -1,21 +1,48 @@
 @extends('layout.index')
 
 @section('body')
-  <div class="layui-container">
-    <div class="layui-row" style="margin-top: 80px;">
-      <form class="layui-form login-form" lay-filter="loginForm" action="{{ route('login') }}" method="post">
-        @csrf
-        <div class="layui-form-item">
-          <input type="text" name="name" value="" required lay-verify="required" placeholder="用户名" autocomplete="off" class="layui-input">
-        </div>
-        <div class="layui-form-item">
-          <input type="password" name="password" value="" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
-        </div>
-        <div class="layui-form-item login-form-button">
-          <input type="hidden" name="remember" value="true">
-          <button class="layui-btn" lay-submit lay-filter="loginForm">登录</button>
-        </div>
-      </form>
-    </div>
-  </div>
+<div class="t-login">
+  <el-form
+    ref="loginForm"
+    :model="loginForm"
+    :rules="loginRules"
+    autocomplete="on"
+    label-position="left"
+  >
+    {{ csrf_field() }}
+    <el-form-item prop="name">
+      <el-input
+        v-model="loginForm.name"
+        placeholder="请输入用户名"
+        type="text"
+        tabindex="1"
+        autocomplete="on"
+      >
+        <template slot="prepend"><i class="el-icon-user"></i></template>
+      </el-input>
+    </el-form-item>
+
+    <el-form-item prop="password">
+      <el-input
+        v-model="loginForm.password"
+        type="password"
+        placeholder="请输入密码"
+        tabindex="2"
+        autocomplete="on"
+      >
+        <template slot="prepend"><i class="el-icon-coin"></i></template>
+      </el-input>
+    </el-form-item>
+
+    <el-button :loading="loading" type="primary" class="t-login-submit" @click.native.prevent="handleLogin">Login</el-button>
+  </el-form>
+</div>
+@endsection
+
+@section('custom_footer')
+<script>
+  window.loginUrl = '{{ route('doLogin') }}';
+  window.backUrl = '{{ session('login_redirect', '') }}';
+</script>
+<script src="{{ mix('js/login.js') }}"></script>
 @endsection

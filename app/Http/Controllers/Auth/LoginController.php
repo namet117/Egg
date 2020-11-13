@@ -39,6 +39,6 @@ class LoginController extends Controller
 
     protected function redirectTo()
     {
-        return session()->get('login_redirect') ?: '/';
+        return session('login_redirect', '/');
     }
 }
