@@ -1,6 +1,7 @@
 new Vue({
   el: '#egg',
   data() {
+    let fixedIndex = localStorage.getItem('egg-table-fixed-index');
     return {
       tableHeight: navigator.userAgent.toLowerCase().indexOf('andriod') > -1 ? '90vh' : '97.5vh',
       stocks: JSON.parse(window.originalStocks) || [],
@@ -47,6 +48,9 @@ new Vue({
       suggestOptions: [],
       isSearching: false,
       searchTimer: null,
+      touchFixedTimer: null,
+      lastTouchFixedTime: 0,
+      fixedIndex: fixedIndex ? parseInt(fixedIndex) : 0,
     }
   },
   methods: {
@@ -158,35 +162,67 @@ new Vue({
     },
 
     getSummaries(param) {
-        const { columns, data } = param,
-          sums = [],
-          computedColumns = ['cost_amount', 'profit_amount', 'profit_ratio'];
-        let totalCost = 0,
-          totalProfit = 0,
-          totalProfitRatio = 0;
-        data.forEach(item => {
-          totalCost += Number(item.cost_amount);
-          totalProfit += Number(item.profit_amount);
-        });
-        totalCost = totalCost.toFixed(2);
-        totalProfit = totalProfit.toFixed(2);
-        totalProfitRatio = ((totalProfit / totalCost) * 100).toFixed(2) + '%';
+      const { columns, data } = param,
+        sums = [],
+        computedColumns = ['cost_amount', 'profit_amount', 'profit_ratio'];
+      let totalCost = 0,
+        totalProfit = 0,
+        totalProfitRatio = 0;
+      data.forEach(item => {
+        totalCost += Number(item.cost_amount);
+        totalProfit += Number(item.profit_amount);
+      });
+      totalCost = totalCost.toFixed(2);
+      totalProfit = totalProfit.toFixed(2);
+      totalProfitRatio = ((totalProfit / totalCost) * 100).toFixed(2) + '%';
 
-        columns.forEach((column, index) => {
-          if (index === 0) {
-            sums[index] = '合计';
-            return;
-          }
-          if (computedColumns.indexOf(column.property) === -1) {
-            sums[index] = '';
-            return;
-          }
-          sums[index] = column.property === 'cost_amount'
-            ? totalCost
-            : column.property === 'profit_amount' ? totalProfit : totalProfitRatio;
-        });
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '合计';
+          return;
+        }
+        if (computedColumns.indexOf(column.property) === -1) {
+          sums[index] = '';
+          return;
+        }
+        sums[index] = column.property === 'cost_amount'
+          ? totalCost
+          : column.property === 'profit_amount' ? totalProfit : totalProfitRatio;
+      });
 
-        return sums;
+      return sums;
+    },
+
+    handleFixedTouchStart(e) {
+      e.preventDefault();
+      this.lastTouchFixedTime = new Date().getTime();
+      this.touchFixedTimer = setTimeout(() => {
+        this.touchFixedTimer = null;
+        if (this.fixedIndex >= 1) {
+          this.fixedIndex = 0;
+        } else {
+          this.fixedIndex++;
+        }
+        localStorage.setItem('egg-table-fixed-index', this.fixedIndex);
+      }, 1000);
+    },
+
+    handleFixedTouchEnd() {
+      clearTimeout(this.touchFixedTimer);
+      if (new Date().getTime() - this.lastTouchFixedTime < 1000) {
+        this.handleClickFixed();
       }
+    },
+
+    handleClickFixed() {
+      switch (this.fixedIndex) {
+        case 0:
+          this.handleCreate();
+          break;
+        case 1:
+          location.reload();
+          break;
+      }
+    },
   },
 });

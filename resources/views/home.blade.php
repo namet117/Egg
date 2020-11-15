@@ -182,8 +182,14 @@
     </div>
   </el-dialog>
 
-  <div class="t-create-btn el-backtop" @click="handleCreate">
-    <i class="el-icon-circle-plus-outline"></i>
+  <div
+    class="t-create-btn el-backtop"
+    @click="handleClickFixed"
+    @touchstart="handleFixedTouchStart"
+    @touchend="handleFixedTouchEnd"
+  >
+    <i class="el-icon-circle-plus-outline" v-if="fixedIndex === 0"></i>
+    <i class="el-icon-refresh" v-else-if="fixedIndex === 1"></i>
   </div>
 @endsection
 
