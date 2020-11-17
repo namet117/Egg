@@ -26,7 +26,7 @@ class UserStockPost extends FormRequest
     {
         return [
             'cate1' => 'bail|required|max:10',
-            'code' => 'bail|required|exists:egg_stocks',
+            'code' => 'bail|required|exists:stocks',
             'cost' => 'bail|required|numeric|min:0',
             'hold_num' => 'bail|required|numeric|min:0',
         ];

@@ -27,7 +27,7 @@ class StockService
 
     public function refreshFund(Stock $stock): bool
     {
-        $url = "http://fund.eastmoney.com/{$stock->code}.html";
+        $url = "https://fund.eastmoney.com/{$stock->code}.html";
         $ql = QueryList::get($url);
 
         $real = $ql->find('.dataItem02>.dataNums>.ui-font-large')->text();
@@ -37,7 +37,7 @@ class StockService
             return false;
         }
         if (!is_numeric($real_ratio)) {
-          $real_ratio = 0;
+            $real_ratio = 0;
         }
         $data = $this->getEstimateInfo($stock->code);
         $data = array_merge($data, compact('real', 'real_date', 'real_ratio'));
@@ -49,7 +49,7 @@ class StockService
 
     private function getEstimateInfo(string $code): array
     {
-        $url = "http://fundgz.1234567.com.cn/js/{$code}.js?rt=" . Helper::microTime();
+        $url = "https://fundgz.1234567.com.cn/js/{$code}.js?rt=" . Helper::microTime();
         $data = file_get_contents($url);
         if (empty($data)) {
             return [];
