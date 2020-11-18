@@ -7,6 +7,7 @@ new Vue({
       loginForm: {
         name: '',
         password: '',
+        remember: 'true'
       },
       loginRules: {
         name: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
