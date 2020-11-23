@@ -65,9 +65,12 @@ new Vue({
       };
     },
     handleSortChange({ prop, order }) {
-      console.log(prop, order);
-      localStorage.setItem('egg-table-sort-prop', prop);
-      localStorage.setItem('egg-table-sort-order', order);
+      if (order === null) {
+        localStorage.removeItem('egg-table-sort-prop');
+      } else {
+        localStorage.setItem('egg-table-sort-prop', prop);
+        localStorage.setItem('egg-table-sort-order', order);
+      }
     },
     handleCreate() {
       if (this.isUpdate !== false) {
