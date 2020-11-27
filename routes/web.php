@@ -26,3 +26,8 @@ Route::middleware(['auth'])->name('egg.')->group(function () {
 // Auth::routes();
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('/login', 'Auth\LoginController@login')->name('doLogin');
+
+
+Route::get('/debug-sentry', function () {
+    throw new Exception('My first Sentry error!');
+});
