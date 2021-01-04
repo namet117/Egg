@@ -1,12 +1,16 @@
 {
-    "name": "namet117/Egg",
-    "type": "project",
+    "name": "namet/egg",
     "description": "🐓🥚🥚",
-    "keywords": [
-        "Egg",
-        "Stock"
-    ],
+    "type": "project",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "namet117",
+            "email": "namet117@163.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": "^7.3|^8.0",
         "ext-json": "*",
@@ -51,8 +55,6 @@
             "Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
