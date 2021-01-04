@@ -33,6 +33,12 @@ class StockController extends Controller
         $total_cost = $total_profit = 0;
         $estimate_amount = $real_amount = [];
         foreach ($rows as $row) {
+            $last_real_time = !empty($row['stocks']['last_real_date'])
+                ? strtotime($row['stocks']['last_real_date'])
+                : 0;
+            $last_real = !empty($row['stocks']['last_real'])
+                ? (float)$row['stocks']['last_real']
+                : 0;
             $row['estimate_date'] = !empty($row['stocks']['estimate_date'])
                 ? date('m-d', strtotime($row['stocks']['estimate_date']))
                 : '';
@@ -69,6 +75,23 @@ class StockController extends Controller
             $row['stocks']['real_ratio'] = (float)$row['stocks']['real_ratio'];
             $row['hold_num'] = (float)$row['hold_num'];
 
+            // 计算今日预计盈亏
+            $row['today_estimate'] = $row['today_real'] = 0;
+            if ($last_real_time && $last_real) {
+                // 当前估值时间大于上日净值时间，则认为是交易中
+                if ($row['estimate_date'] && (strtotime($row['stocks']['estimate_date']) > $last_real_time)) {
+                    $row['today_estimate'] =
+                        (float)bcmul($row['hold_num'], bcsub($row['stocks']['estimate'], $last_real, 4), 2);
+                    $row['last_real'] = $last_real;
+                }
+                // 当前净值时间大于上日净值日期，则认为是净值有更新
+                if ($row['real_date'] && (strtotime($row['stocks']['real_date']) > $last_real_time)) {
+                    $row['today_real'] =
+                        (float)bcmul($row['hold_num'], bcsub($row['stocks']['real'], $last_real, 4), 2);
+                    $row['last_real'] = $last_real;
+                }
+            }
+
             $estimate_amount[$row['stocks']['estimate_date']] = $estimate_amount[$row['stocks']['estimate_date']] ?? 0;
             $real_amount[$row['stocks']['real_date']] = $real_amount[$row['stocks']['real_date']] ?? 0;
 
@@ -83,7 +106,7 @@ class StockController extends Controller
                     $row,
                     [
                         'id', 'cate1', 'cate2', 'cost', 'hold_num', 'cost_amount', 'profit_amount', 'profit_ratio',
-                        'real_date', 'estimate_date',
+                        'real_date', 'estimate_date', 'last_real', 'today_estimate', 'today_real',
                     ]
                 ),
                 Arr::only($row['stocks'], ['code', 'name', 'estimate_ratio', 'real_ratio', 'real', 'estimate']),

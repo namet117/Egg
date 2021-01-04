@@ -167,13 +167,17 @@ new Vue({
     getSummaries(param) {
       const { columns, data } = param,
         sums = [],
-        computedColumns = ['cost_amount', 'profit_amount', 'profit_ratio'];
+        computedColumns = ['estimate_ratio', 'real_ratio', 'cost_amount', 'profit_amount', 'profit_ratio'];
       let totalCost = 0,
         totalProfit = 0,
-        totalProfitRatio = 0;
+        totalProfitRatio = 0,
+        totalTodayEstimateAmount = 0,
+        totalTodayRealAmount = 0;
       data.forEach(item => {
         totalCost += Number(item.cost_amount);
         totalProfit += Number(item.profit_amount);
+        totalTodayEstimateAmount += Number(item.today_estimate);
+        totalTodayRealAmount += Number(item.today_real);
       });
       totalCost = totalCost.toFixed(2);
       totalProfit = totalProfit.toFixed(2);
@@ -188,9 +192,15 @@ new Vue({
           sums[index] = '';
           return;
         }
-        sums[index] = column.property === 'cost_amount'
-          ? totalCost
-          : column.property === 'profit_amount' ? totalProfit : totalProfitRatio;
+        let map = {
+          estimate_ratio: totalTodayEstimateAmount, // > 0 ? this.withColor(totalTodayEstimateAmount) : '',
+          real_ratio: totalTodayRealAmount, // > 0 ? this.withColor(totalTodayRealAmount) : '',
+          cost_amount: totalCost,
+          profit_amount: totalProfit,
+          profit_ratio: totalProfitRatio,
+        };
+
+        sums[index] = map[column.property] || '';
       });
 
       return sums;
@@ -226,6 +236,12 @@ new Vue({
           location.reload();
           break;
       }
+    },
+
+    withColor(num) {
+      let className = num > 0 ? 't-red' : (num < 0 ? 't-green' : 't-grey');
+
+      return `<span class="${className}">${num}</span>`;
     },
   },
 });
