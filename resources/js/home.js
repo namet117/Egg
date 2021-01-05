@@ -193,8 +193,8 @@ new Vue({
           return;
         }
         let map = {
-          estimate_ratio: totalTodayEstimateAmount, // > 0 ? this.withColor(totalTodayEstimateAmount) : '',
-          real_ratio: totalTodayRealAmount, // > 0 ? this.withColor(totalTodayRealAmount) : '',
+          estimate_ratio: totalTodayEstimateAmount.toFixed(2), // > 0 ? this.withColor(totalTodayEstimateAmount) : '',
+          real_ratio: totalTodayRealAmount.toFixed(2), // > 0 ? this.withColor(totalTodayRealAmount) : '',
           cost_amount: totalCost,
           profit_amount: totalProfit,
           profit_ratio: totalProfitRatio,
