@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('egg:refresh_user_stock')->everyMinute()->withoutOverlapping(60);
         $schedule->command('egg:refresh_last_real')->dailyAt('08:50');
+        $schedule->command('egg:refresh_all')->dailyAt('01:00');
     }
 
     /**
