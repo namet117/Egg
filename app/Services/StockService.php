@@ -4,7 +4,7 @@
 namespace App\Services;
 
 
-use App\Http\Models\Stock;
+use App\Models\Stock;
 use App\Utils\Helper;
 use QL\QueryList;
 

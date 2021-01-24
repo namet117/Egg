@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Models\Stock;
-use App\Http\Models\UserStock;
+use App\Models\Stock;
+use App\Models\UserStock;
 use App\Http\Requests\UserStockPost;
 use App\Services\StockService;
 use App\Utils\Calc;
