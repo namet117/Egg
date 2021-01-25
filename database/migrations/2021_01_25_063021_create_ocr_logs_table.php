@@ -15,6 +15,10 @@ class CreateOcrLogsTable extends Migration
     {
         Schema::create('ocr_logs', function (Blueprint $table) {
             $table->id();
+            $table->string('image_path');
+            $table->char('image_hash', 32);
+            $table->string('driver', 100)->default('');
+            $table->text('response')->nullable();
             $table->timestamps();
         });
     }

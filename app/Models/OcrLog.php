@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class OcrLog extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'image_path', 'image_hash', 'response', 'driver',
+    ];
 }
