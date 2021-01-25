@@ -18,6 +18,17 @@
     bottom: 40px;
   }
 
+  &-upload-btn {
+    position: fixed;
+    right: 40px;
+    bottom: 90px;
+  }
+  &-uploader {
+    .el-upload--picture-card,.el-upload-list--picture-card .el-upload-list__item {
+      width: 74px;
+    }
+  }
+
   &-login {
     margin: 20vh auto 0;
     width: 90%;
@@ -35,6 +46,12 @@
     width: 50%;
     max-width: 60vh;
   }
+  .t-uploader {
+    &>div {
+      width: 80%;
+      max-width: 80vh;
+    }
+  }
 }
 
 @media screen and (min-width: 769px) and (max-width: 992px) {
@@ -45,6 +62,9 @@
 
 @media screen and (max-width: 768px) {
   .t-detail>div {
+    width: 100%;
+  }
+  .t-uploader>div {
     width: 100%;
   }
 }

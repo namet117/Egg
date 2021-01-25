@@ -16,4 +16,9 @@ class Helper
 
         return (float)sprintf('%.0f', (floatval($m_sec) + floatval($sec)) * 1000);
     }
+
+    public static function extractNumberFromString(string $string): string
+    {
+        return preg_replace('/[^\d.]/', '', $string);
+    }
 }

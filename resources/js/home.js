@@ -8,7 +8,7 @@ new Vue({
       tRealDate: window.tRealDate,
       tEstimateDate: window.tEstimateDate,
       dialogTitle: '',
-      isShowDialog: false,
+      isShowEditDialog: false,
       stockDetail: {
         cate1: '',
         name: '',
@@ -51,6 +51,13 @@ new Vue({
       touchFixedTimer: null,
       lastTouchFixedTime: 0,
       fixedIndex: fixedIndex ? parseInt(fixedIndex) : 0,
+
+      isImagePreview: false,
+      previewImage: '',
+
+      isShowUploadDialog: false,
+      uploadImages: [],
+      toUpdated: [],
     }
   },
   methods: {
@@ -78,14 +85,14 @@ new Vue({
         this.isUpdate = false;
       }
       this.dialogTitle = 'New Stock';
-      this.isShowDialog = true;
+      this.isShowEditDialog = true;
       this.$nextTick(() => this.$refs['stockDetail'].clearValidate());
     },
 
     handleEdit(row) {
       this.assignStockDetails(row);
       this.dialogTitle = 'Edit Stock';
-      this.isShowDialog = true;
+      this.isShowEditDialog = true;
       this.isUpdate = true;
       this.updateUrl = row.edit;
     },
@@ -243,5 +250,16 @@ new Vue({
 
       return `<span class="${className}">${num}</span>`;
     },
+
+    previewBeforeUpload(file) {
+      this.previewImage = file.url;
+      this.isImagePreview = true;
+    },
+    startUpload() {
+      if (!(this.uploadImages.length > 0)) {
+        return this.$message.error('至少选择一张图片');
+      }
+      console.log('loading');
+    }
   },
 });

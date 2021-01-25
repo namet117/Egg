@@ -135,7 +135,7 @@
     </el-main>
   </el-container>
 
-  <el-dialog :title="dialogTitle" :visible.sync="isShowDialog" :close-on-click-modal="false" class="t-detail">
+  <el-dialog :title="dialogTitle" :visible.sync="isShowEditDialog" :close-on-click-modal="false" class="t-detail">
     <el-form ref="stockDetail" label-position="right" label-width="80px" :model="stockDetail" :rules="stockRules" status-icon>
       <el-form-item label="名称" prop="name">
         <el-select
@@ -160,14 +160,10 @@
       </el-form-item>
       <el-form-item label="代码" prop="code">
         <span v-html="stockDetail.code"></span>
-{{--        <el-input maxlength="50" show-word-limit v-model="stockDetail.code"></el-input>--}}
       </el-form-item>
       <el-form-item label="板块" prop="cate1">
         <el-input maxlength="10" show-word-limit v-model="stockDetail.cate1"></el-input>
       </el-form-item>
-{{--      <el-form-item label="小类" prop="cate2">--}}
-{{--        <el-input maxlength="10" show-word-limit v-model="stockDetail.cate2"></el-input>--}}
-{{--      </el-form-item>--}}
       <el-form-item label="成本价" prop="cost">
         <el-input-number v-model="stockDetail.cost" :step="0.0001" step-strictly :min="0"></el-input-number>
       </el-form-item>
@@ -177,10 +173,44 @@
     </el-form>
 
     <div slot="footer">
-      <el-button @click="isShowDialog = false">取 消</el-button>
+      <el-button @click="isShowEditDialog = false">取 消</el-button>
       <el-button type="primary" @click="submitForm" :loading="isLoading">确 定</el-button>
     </div>
   </el-dialog>
+
+  <el-dialog :title="dialogTitle" :visible.sync="isShowUploadDialog" :close-on-click-modal="false" class="t-uploader">
+    <el-upload
+      multiple
+      action="https://jsonplaceholder.typicode.com/posts/"
+      list-type="picture-card"
+      :auto-upload="false"
+      :file-list="uploadImages"
+      :on-preview="previewBeforeUpload"
+      accept="image/png, image/jpeg"
+      :limit="10"
+    >
+      <template slot="tip">
+        一次性最多上传10张图片
+      </template>
+      <i class="el-icon-plus"></i>
+    </el-upload>
+
+    <div slot="footer">
+      <el-button @click="isShowUploadDialog = false">取 消</el-button>
+      <el-button type="primary" @click="startUpload" :loading="isLoading">开始上传</el-button>
+    </div>
+  </el-dialog>
+
+  <el-dialog :visible.sync="isImagePreview">
+    <img width="100%" :src="previewImage" alt="">
+  </el-dialog>
+
+  <div
+    class="t-upload-btn el-backtop"
+    @click="isShowUploadDialog = true"
+  >
+    <i class="el-icon-upload"></i>
+  </div>
 
   <div
     class="t-create-btn el-backtop"

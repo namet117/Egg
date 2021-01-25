@@ -5,13 +5,14 @@ namespace App\Services;
 use App\Lib\Aip\Ocr;
 use App\Models\OcrLog;
 use App\Traits\ServiceTrait;
+use App\Utils\Helper;
 
 class OcrService
 {
     use ServiceTrait;
 
 
-    private Ocr $driver;
+    private $driver = null;
 
     private function instance(): Ocr
     {
@@ -42,7 +43,7 @@ class OcrService
         $image_hash = md5_file($image_path);
         $row = OcrLog::where('image_hash', '=', $image_hash)->first();
         if ($row) {
-            return json_decode($row->response, true);
+            return !$row->response ? [] : (json_decode($row->response, true) ?: []);
         }
         $driver = 'baidu';
         $ocr = OcrLog::create(compact('image_hash', 'image_path', 'driver'));
@@ -73,7 +74,16 @@ class OcrService
         }
         $result = [];
         foreach ($words as $word) {
-
+            $word = str_replace([','], '', $word);
+            if (preg_match('/^持仓成本价\d+\.\d+$/', $word)) {
+                $result['cost'] = Helper::extractNumberFromString($word);
+            } elseif (preg_match('/^持有份额\d+\.\d+$/', $word)) {
+                $result['hold_num'] = Helper::extractNumberFromString($word);
+            } elseif (preg_match('/^\d{6}.+风险$/', $word)) {
+                $result['code'] = mb_substr($word, 0, 6);
+            }
         }
+
+        return $result;
     }
 }
