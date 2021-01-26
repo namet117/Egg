@@ -28,6 +28,15 @@
       width: 74px;
     }
   }
+  &-preview-image {
+    .el-dialog {
+      background-color: transparent;
+
+      &__close {
+        color: white;
+      }
+    }
+  }
 
   &-login {
     margin: 20vh auto 0;
@@ -42,12 +51,12 @@
 }
 
 @media screen and (min-width: 993px) {
-  .t-detail>div {
+  .t-detail > .el-dialog {
     width: 50%;
     max-width: 60vh;
   }
   .t-uploader {
-    &>div {
+    & > .el-dialog {
       width: 80%;
       max-width: 80vh;
     }
@@ -55,16 +64,26 @@
 }
 
 @media screen and (min-width: 769px) and (max-width: 992px) {
-  .t-detail>div {
+  .t-detail > .el-dialog {
     width: 75%;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .t-detail>div {
+  .t-detail > .el-dialog {
     width: 100%;
   }
-  .t-uploader>div {
+  .t-uploader > .el-dialog {
     width: 100%;
+  }
+  .t-preview-image > .el-dialog {
+    margin-top: 0 !important;
+    padding: 20px;
+  }
+  .el-message-box {
+    width: 90vw;
+  }
+  .el-dialog {
+    margin-top: 5vh !important;
   }
 }

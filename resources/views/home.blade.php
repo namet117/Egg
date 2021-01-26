@@ -178,20 +178,23 @@
     </div>
   </el-dialog>
 
-  <el-dialog :title="dialogTitle" :visible.sync="isShowUploadDialog" :close-on-click-modal="false" class="t-uploader">
+  <el-dialog  title="上传图片更新持仓" :visible.sync="isShowUploadDialog" :close-on-click-modal="false" class="t-uploader">
     <el-upload
       multiple
-      action="https://jsonplaceholder.typicode.com/posts/"
+      :disabled="imageUploadLeft === 0"
+      action="{{ route('egg.updateByImg') }}"
       list-type="picture-card"
       :auto-upload="false"
       :file-list="uploadImages"
       :on-preview="previewBeforeUpload"
+      :on-exceed="exceedMaxUploadImage"
+      :on-change="handleUploadImagesChange"
+      :on-remove="handleUploadImagesChange"
+      :before-remove="beforeRemoveUploadImage"
       accept="image/png, image/jpeg"
-      :limit="10"
+      :limit="maxImageNum"
     >
-      <template slot="tip">
-        一次性最多上传10张图片
-      </template>
+      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件,且单张不超过2M，还可上传@{{ imageUploadLeft }}张</div>
       <i class="el-icon-plus"></i>
     </el-upload>
 
@@ -201,7 +204,7 @@
     </div>
   </el-dialog>
 
-  <el-dialog :visible.sync="isImagePreview">
+  <el-dialog :visible.sync="isImagePreview" class="t-detail t-preview-image">
     <img width="100%" :src="previewImage" alt="">
   </el-dialog>
 

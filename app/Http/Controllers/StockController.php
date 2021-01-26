@@ -186,4 +186,9 @@ class StockController extends Controller
             ->limit(50)
             ->get(['code', 'name']);
     }
+
+    public function uploadImg(Request $request)
+    {
+        $files = $request->allFiles();
+    }
 }

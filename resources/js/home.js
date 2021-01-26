@@ -56,9 +56,20 @@ new Vue({
       previewImage: '',
 
       isShowUploadDialog: false,
-      uploadImages: [],
+      maxImageNum: 10,
+      uploadImages: [
+        {
+          name: 'baidu-avatar.jpg',
+          url: 'http://tb.himg.baidu.com/sys/portrait/item/9218e586b0e58fa6e5af926d03',
+        }
+      ],
       toUpdated: [],
     }
+  },
+  computed: {
+    imageUploadLeft() {
+      return this.maxImageNum - this.uploadImages.length;
+    },
   },
   methods: {
     assignStockDetails(detail) {
@@ -254,6 +265,35 @@ new Vue({
     previewBeforeUpload(file) {
       this.previewImage = file.url;
       this.isImagePreview = true;
+    },
+    exceedMaxUploadImage() {
+      this.$message.error('单次最多可上传10张，还可以选' + this.imageUploadLeft + '张');
+    },
+    beforeRemoveUploadImage() {
+      return this.$confirm('确认删除移除此图片？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      });
+    },
+    handleUploadImagesChange(file, fileList) {
+      /*this.uploadImages*/fileList = fileList.filter(value => {
+        if (value.size > 2 * 1024 * 1024) {
+          console.log(value);
+          this.$message.error('已过滤超过2M的图片！');
+
+          return false;
+        }
+
+        return true;
+      });
+      let result = [];
+      fileList.forEach(f => {
+        f.percentage = 20;
+        result.push(f);
+      });
+      console.log(result);
+      this.uploadImages = result;
     },
     startUpload() {
       if (!(this.uploadImages.length > 0)) {

@@ -20,6 +20,8 @@ Route::middleware(['auth'])->name('egg.')->group(function () {
     Route::resource('userStock', 'StockController')->except('show', 'create', 'edit');
     // 搜索基金
     Route::get('search', 'StockController@search')->name('search');
+    // 上传图片更新基金
+    Route::post('updateByImg', 'StockController@uploadImg')->name('updateByImg');
 });
 
 // 登录
