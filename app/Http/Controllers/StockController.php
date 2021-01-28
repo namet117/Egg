@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Stock;
 use App\Models\UserStock;
 use App\Http\Requests\UserStockPost;
+use App\Services\OcrService;
 use App\Services\StockService;
 use App\Utils\Calc;
+use App\Utils\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class StockController extends Controller
 {
@@ -187,8 +191,85 @@ class StockController extends Controller
             ->get(['code', 'name']);
     }
 
-    public function uploadImg(Request $request)
+    public function uploadImg(Request $request, OcrService $ocrService)
     {
-        $files = $request->allFiles();
+        if (empty($_FILES['image']) || !is_array($_FILES['image'])) {
+            return ['code' => 1, 'msg' => '请上传图片'];
+        }
+
+        $max_size = 2 * 1024 * 1024;
+        $allowed_types = ['image/png', 'image/jpeg'];
+        $images = [];
+
+        foreach ($_FILES['image']['name'] as $k => $name) {
+            $single = [
+                'name' => $_FILES['image']['name'][$k],
+                'type' => $_FILES['image']['type'][$k],
+                'tmp_name' => $_FILES['image']['tmp_name'][$k],
+                'error' => $_FILES['image']['error'][$k],
+                'size' => $_FILES['image']['size'][$k],
+            ];
+            $tmp[] = $single;
+            if (
+                $single['error'] == 0
+                && $single['size'] < $max_size
+                && in_array($single['type'], $allowed_types)
+                && getimagesize($single['tmp_name'])
+            ) {
+                $filename = md5_file($single['tmp_name']) . '.' . (Helper::getExt($single['name']) ?: 'png');
+                $dirname = 'public/upload/' . date('Ymd');
+                $file_path = "{$dirname}/{$filename}";
+                if (Storage::put($file_path, file_get_contents($single['tmp_name']))) {
+                    $images[] = [
+                        'url' => Storage::url($file_path),
+                        'file_path' => $file_path,
+                        'file_full_path' => Storage::path($file_path),
+                        'filename' => $filename,
+                    ];
+                }
+            }
+        }
+        if (empty($images)) {
+            return ['code' => 1, 'msg' => '没有可保存的图片，请重新选择'];
+        }
+
+        $result = [];
+        foreach ($images as $image) {
+            $row = ['url' => $image['url']];
+            $data = [];
+            if (
+                ($info = $ocrService->getInfoFromImage($image['file_full_path'], $image['url']))
+                && ($stock = Stock::whereCode($info['code'])->first())
+            ) {
+                $row['code'] = $stock->code;
+                $row['name'] = $stock->name;
+                $row['cate1'] = '';
+                if ($detail = UserStock::whereStockId($stock->id)->first()) {
+                    $data['old'] = [
+                        'cost' => $detail->cost,
+                        'hold_num' => $detail->hold_num,
+                    ];
+                    $row['cate1'] = $detail->cate1;
+                }
+                $data['new'] = [
+                    'cost' => $info['cost'],
+                    'hold_num' => $info['hold_num'],
+                ];
+                $is_delete = floatval($data['new']['cost']) == 0;
+                if (!$detail && $is_delete) {
+                    $data = [];
+                }
+                if ($data) {
+                    $row['request'] = $detail
+                        ? route('egg.userStock.' . ($is_delete ? 'destroy' : 'update'), $detail->id)
+                        : route('egg.userStock.store');
+                    $row['method'] = $detail ? ($is_delete ? 'DELETE' : 'PUT') : 'POST';
+                }
+            }
+            $row['data'] = $data ?: false;
+            $result[] = $row;
+        }
+
+        return ['code' => 0, 'data' => $result, 'msg' => '识别成功'];
     }
 }

@@ -2,6 +2,8 @@ new Vue({
   el: '#egg',
   data() {
     let fixedIndex = localStorage.getItem('egg-table-fixed-index');
+    // For Test
+    let uploadedImagesInfo = JSON.parse('[{"url":"/storage/upload/20210129/8d9b56e4dc5361c81011ace1b3d161ea.png","data":false},{"url":"/storage/upload/20210129/f06b4e10344ef8b000f4f4ef811f82c8.png","code":"001593","name":"天弘创业板ETF联接基金C","cate1":"指数","request":"http://127.0.0.1:8000/userStock/41","method":"PUT","data":{"old":{"cost":"1.2011","hold_num":"3330.29"},"new":{"cost":"1.0464","hold_num":"955.66"}}},{"url":"/storage/upload/20210129/bd62e94d9204595cb313fc7390c159ad.png","code":"161724","name":"招商中证煤炭等权指数分级","cate1":"煤炭","request":"http://127.0.0.1:8000/userStock/78","method":"DELETE","data":{"old":{"cost":"1.0264","hold_num":"6820.18"},"new":{"cost":"0.0000","hold_num":"2233.08"}}}]');
     return {
       tableHeight: navigator.userAgent.toLowerCase().indexOf('andriod') > -1 ? '90vh' : '97.5vh',
       stocks: JSON.parse(window.originalStocks) || [],
@@ -57,18 +59,21 @@ new Vue({
 
       isShowUploadDialog: false,
       maxImageNum: 10,
-      uploadImages: [
-        {
-          name: 'baidu-avatar.jpg',
-          url: 'http://tb.himg.baidu.com/sys/portrait/item/9218e586b0e58fa6e5af926d03',
-        }
-      ],
+      uploadImages: [],
+      uploadPercent: 0,
       toUpdated: [],
+
+      isShowUploadedDialog: false,
+      uploadedImagesInfo,//: [],
+      currentInfoIndex: 0,
     }
   },
   computed: {
     imageUploadLeft() {
       return this.maxImageNum - this.uploadImages.length;
+    },
+    currentImageInfo() {
+      return this.uploadedImagesInfo[this.currentInfoIndex] || {};
     },
   },
   methods: {
@@ -262,9 +267,14 @@ new Vue({
       return `<span class="${className}">${num}</span>`;
     },
 
-    previewBeforeUpload(file) {
-      this.previewImage = file.url;
+    handlePreviewImage(url) {
+      if (!url) return ;
+      this.previewImage = url;
       this.isImagePreview = true;
+    },
+
+    previewBeforeUpload(file) {
+      this.handlePreviewImage(file.url);
     },
     exceedMaxUploadImage() {
       this.$message.error('单次最多可上传10张，还可以选' + this.imageUploadLeft + '张');
@@ -277,29 +287,51 @@ new Vue({
       });
     },
     handleUploadImagesChange(file, fileList) {
-      /*this.uploadImages*/fileList = fileList.filter(value => {
-        if (value.size > 2 * 1024 * 1024) {
-          console.log(value);
+      this.uploadImages = fileList.filter(value => {
+        if (value.size > 10 * 1024 * 1024) {
           this.$message.error('已过滤超过2M的图片！');
-
           return false;
         }
-
         return true;
       });
-      let result = [];
-      fileList.forEach(f => {
-        f.percentage = 20;
-        result.push(f);
-      });
-      console.log(result);
-      this.uploadImages = result;
     },
     startUpload() {
       if (!(this.uploadImages.length > 0)) {
         return this.$message.error('至少选择一张图片');
       }
-      console.log('loading');
+      this.isLoading = true;
+      let form = new FormData, fileNum = 0;
+      this.uploadImages.forEach(image => {
+        if (image.raw) {
+          form.append('image[]', image.raw, image.name);
+          fileNum ++;
+        }
+      });
+      if (fileNum === 0) {
+        this.isLoading = false;
+        return this.$message.error('暂无可上传的图片！');
+      }
+
+      let axiosConfig = {
+        onUploadProgress: progressEvent => {
+          this.uploadPercent = (progressEvent.loaded / progressEvent.total * 100).toFixed(1);
+        },
+      };
+      axios.post(window.updateByImgUrl, form, axiosConfig)
+        .then(res => {
+          let data = res.data || {};
+          if (data.code !== 0) {
+            return this.$message.error(data.msg || '图片上传功能异常');
+          }
+
+          this.uploadedImagesInfo = data.data || [];
+          this.isShowUploadedDialog = true;
+        })
+        .catch(e => {
+          console.error(e);
+          this.$message.error(e.msg || '上传功能异常');
+        })
+        .then(() => this.isLoading = false);
     }
   },
 });

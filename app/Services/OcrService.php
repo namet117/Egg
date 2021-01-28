@@ -23,22 +23,22 @@ class OcrService
         return $this->driver;
     }
 
-    public function getInfoFromImage(string $image_path): array
+    public function getInfoFromImage(string $full_path, string $public_path = ''): array
     {
-        if (!file_exists($image_path) || !is_readable($image_path)) {
-            $this->setError("File:{$image_path} is not readable");
+        if (!file_exists($full_path) || !is_readable($full_path)) {
+            $this->setError("File:{$full_path} is not readable");
             return [];
         }
-        if (!$response = $this->getResultFromLogs($image_path)) {
-            $content = file_get_contents($image_path);
+        if (!$response = $this->getResultFromLogs($full_path, $public_path)) {
+            $content = file_get_contents($full_path);
             $response = $this->instance()->basicAccurate($content);
-            $this->setResponse($image_path, json_encode($response));
+            $this->setResponse($full_path, json_encode($response));
         }
 
         return $this->extractInfoFromWords($response);
     }
 
-    private function getResultFromLogs(string $image_path): array
+    private function getResultFromLogs(string $image_path, string $image_url = ''): array
     {
         $image_hash = md5_file($image_path);
         $row = OcrLog::where('image_hash', '=', $image_hash)->first();
@@ -46,7 +46,7 @@ class OcrService
             return !$row->response ? [] : (json_decode($row->response, true) ?: []);
         }
         $driver = 'baidu';
-        $ocr = OcrLog::create(compact('image_hash', 'image_path', 'driver'));
+        $ocr = OcrLog::create(compact('image_hash', 'image_path', 'driver', 'image_url'));
         $ocr->save();
 
         return [];
@@ -84,6 +84,6 @@ class OcrService
             }
         }
 
-        return $result;
+        return (isset($result['cost']) && isset($result['hold_num']) && isset($result['code'])) ? $result : [];
     }
 }

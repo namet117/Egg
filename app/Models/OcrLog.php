@@ -10,6 +10,6 @@ class OcrLog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image_path', 'image_hash', 'response', 'driver',
+        'image_path', 'image_hash', 'image_url', 'response', 'driver',
     ];
 }

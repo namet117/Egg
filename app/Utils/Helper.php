@@ -21,4 +21,10 @@ class Helper
     {
         return preg_replace('/[^\d.]/', '', $string);
     }
+
+    public static function getExt(string $filename): string
+    {
+        $filename = strrev($filename);
+        return strrev(substr($filename, 0, strpos($filename, '.')));
+    }
 }

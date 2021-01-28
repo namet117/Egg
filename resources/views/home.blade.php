@@ -135,6 +135,28 @@
     </el-main>
   </el-container>
 
+  <el-dialog :visible.sync="isImagePreview" class="t-detail t-preview-image">
+    <img width="100%" :src="previewImage" alt="">
+  </el-dialog>
+
+{{--  For Test--}}
+{{--  <div class="t-upload-btn el-backtop" @click="isShowUploadDialog = true">--}}
+  <div class="t-upload-btn el-backtop" @click="isShowUploadedDialog = true">
+    <i class="el-icon-upload"></i>
+  </div>
+
+  <div
+    class="t-create-btn el-backtop"
+    @click="handleClickFixed"
+    @touchstart="handleFixedTouchStart"
+    @touchend="handleFixedTouchEnd"
+  >
+    <i class="el-icon-circle-plus-outline" v-if="fixedIndex === 0"></i>
+    <i class="el-icon-refresh" v-else-if="fixedIndex === 1"></i>
+  </div>
+
+
+
   <el-dialog :title="dialogTitle" :visible.sync="isShowEditDialog" :close-on-click-modal="false" class="t-detail">
     <el-form ref="stockDetail" label-position="right" label-width="80px" :model="stockDetail" :rules="stockRules" status-icon>
       <el-form-item label="名称" prop="name">
@@ -178,7 +200,7 @@
     </div>
   </el-dialog>
 
-  <el-dialog  title="上传图片更新持仓" :visible.sync="isShowUploadDialog" :close-on-click-modal="false" class="t-uploader">
+  <el-dialog title="上传图片更新持仓" :visible.sync="isShowUploadDialog" :close-on-click-modal="false" class="t-uploader" :show-close="false">
     <el-upload
       multiple
       :disabled="imageUploadLeft === 0"
@@ -199,31 +221,27 @@
     </el-upload>
 
     <div slot="footer">
-      <el-button @click="isShowUploadDialog = false">取 消</el-button>
-      <el-button type="primary" @click="startUpload" :loading="isLoading">开始上传</el-button>
+      <el-button @click="isShowUploadDialog = isLoading = false">取 消</el-button>
+      <el-button type="primary" @click="startUpload" :loading="isLoading" :disabled="uploadImages.length === 0">@{{ isLoading ? `${uploadPercent}%` : '开始上传' }}</el-button>
     </div>
   </el-dialog>
 
-  <el-dialog :visible.sync="isImagePreview" class="t-detail t-preview-image">
-    <img width="100%" :src="previewImage" alt="">
+  <el-dialog
+    :title="`更新内容确认${currentInfoIndex + 1}/${uploadedImagesInfo.length}`"
+    :visible.sync="isShowUploadedDialog"
+    :close-on-click-modal="false"
+    :show-close="false"
+    class="t-detail t-uploaded"
+    center
+  >
+    <img :src="currentImageInfo.url" alt="" @click="handlePreviewImage(currentImageInfo.url)">
+
+    <div slot="footer">
+      <el-button @click="isShowUploadDialog = isLoading = false">取 消</el-button>
+      <el-button type="primary" @click="startUpload" :loading="isLoading" :disabled="uploadImages.length === 0">@{{ isLoading ? `${uploadPercent}%` : '开始上传' }}</el-button>
+    </div>
   </el-dialog>
 
-  <div
-    class="t-upload-btn el-backtop"
-    @click="isShowUploadDialog = true"
-  >
-    <i class="el-icon-upload"></i>
-  </div>
-
-  <div
-    class="t-create-btn el-backtop"
-    @click="handleClickFixed"
-    @touchstart="handleFixedTouchStart"
-    @touchend="handleFixedTouchEnd"
-  >
-    <i class="el-icon-circle-plus-outline" v-if="fixedIndex === 0"></i>
-    <i class="el-icon-refresh" v-else-if="fixedIndex === 1"></i>
-  </div>
 @endsection
 
 @section('custom_footer')
@@ -231,6 +249,7 @@
     window.originalStocks = '{!! json_encode($stocks) !!}';
     window.storeUrl = '{{ route('egg.userStock.store') }}';
     window.searchUrl = '{{ route('egg.search') }}';
+    window.updateByImgUrl = '{{ route('egg.updateByImg') }}'
     window.tRealDate = '{{ $t_real_date }}';
     window.tEstimateDate = '{{ $t_estimate_date }}';
   </script>

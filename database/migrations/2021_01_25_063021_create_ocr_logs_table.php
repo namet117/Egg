@@ -17,6 +17,7 @@ class CreateOcrLogsTable extends Migration
             $table->id();
             $table->string('image_path');
             $table->char('image_hash', 32);
+            $table->string('image_url')->nullable();
             $table->string('driver', 100)->default('');
             $table->text('response')->nullable();
             $table->timestamps();
