@@ -236,9 +236,19 @@
   >
     <img :src="currentImageInfo.url" alt="" @click="handlePreviewImage(currentImageInfo.url)">
 
+    <div v-if="currentImageInfo.data === false">未能读取到有效信息，请确认截图是否正确～</div>
+    <div v-else>
+      <p>@{{ currentImageInfo.name }}</p>
+      <p>@{{ currentImageInfo.code }}</p>
+
+    </div>
+    @{{ currentImageInfo }}
+
     <div slot="footer">
-      <el-button @click="isShowUploadDialog = isLoading = false">取 消</el-button>
-      <el-button type="primary" @click="startUpload" :loading="isLoading" :disabled="uploadImages.length === 0">@{{ isLoading ? `${uploadPercent}%` : '开始上传' }}</el-button>
+      <el-button type="primary" icon="el-icon-d-arrow-left" :disabled="currentInfoIndex === 0" @click="currentInfoIndex --"></el-button>
+      <el-button @click="isShowUploadedDialog = false">关闭</el-button>
+      <el-button type="primary" @click="startUpload" :loading="isLoading" :disabled="currentImageInfo.data === false">@{{ isLoading ? '保存中..' : '保存' }}</el-button>
+      <el-button type="primary" icon="el-icon-d-arrow-right" :disabled="currentInfoIndex === (uploadedImagesInfo.length - 1)" @click="currentInfoIndex ++"></el-button>
     </div>
   </el-dialog>
 
