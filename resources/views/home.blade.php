@@ -236,19 +236,32 @@
   >
     <img :src="currentImageInfo.url" alt="" @click="handlePreviewImage(currentImageInfo.url)">
 
-    <div v-if="currentImageInfo.data === false">未能读取到有效信息，请确认截图是否正确～</div>
+    <div v-if="currentImageInfo.data === false">未能读取到有效信息，请确认截图内容是否正确</div>
     <div v-else>
-      <p>@{{ currentImageInfo.name }}</p>
-      <p>@{{ currentImageInfo.code }}</p>
-
+      <el-form label-position="left" label-width="80px" :rules="stockRules" :model="currentImageInfo">
+        <el-form-item label="名称">
+          @{{ currentImageInfo.name }}
+        </el-form-item>
+        <el-form-item label="代码">
+          @{{ currentImageInfo.code }}
+        </el-form-item>
+        <el-form-item label="板块">
+          <el-input maxlength="10" show-word-limit v-model="currentImageInfo.cate1"></el-input>
+        </el-form-item>
+        <el-form-item label="成本">
+          <el-input-number v-model="currentImageInfo.cost" :step="0.0001" step-strictly :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="份数">
+          <el-input-number v-model="currentImageInfo.hold_num" :step="0.01" step-strictly :min="0"></el-input-number>
+        </el-form-item>
+      </el-form>
     </div>
-    @{{ currentImageInfo }}
 
     <div slot="footer">
-      <el-button type="primary" icon="el-icon-d-arrow-left" :disabled="currentInfoIndex === 0" @click="currentInfoIndex --"></el-button>
+      <el-button type="primary" icon="el-icon-d-arrow-left" :disabled="currentInfoIndex === 0" @click="handlePageChange(false)"></el-button>
       <el-button @click="isShowUploadedDialog = false">关闭</el-button>
       <el-button type="primary" @click="startUpload" :loading="isLoading" :disabled="currentImageInfo.data === false">@{{ isLoading ? '保存中..' : '保存' }}</el-button>
-      <el-button type="primary" icon="el-icon-d-arrow-right" :disabled="currentInfoIndex === (uploadedImagesInfo.length - 1)" @click="currentInfoIndex ++"></el-button>
+      <el-button type="primary" icon="el-icon-d-arrow-right" :disabled="currentInfoIndex === (uploadedImagesInfo.length - 1)" @click="handlePageChange(true)"></el-button>
     </div>
   </el-dialog>
 

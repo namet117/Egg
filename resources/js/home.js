@@ -66,15 +66,16 @@ new Vue({
       isShowUploadedDialog: false,
       uploadedImagesInfo,//: [],
       currentInfoIndex: 0,
+      currentImageInfo: {},
     }
   },
   computed: {
     imageUploadLeft() {
       return this.maxImageNum - this.uploadImages.length;
     },
-    currentImageInfo() {
-      return this.uploadedImagesInfo[this.currentInfoIndex] || {};
-    },
+  },
+  created() {
+    this.assignUploadImageInfo();
   },
   methods: {
     assignStockDetails(detail) {
@@ -295,6 +296,13 @@ new Vue({
         return true;
       });
     },
+    assignUploadImageInfo() {
+      this.currentImageInfo = this.uploadedImagesInfo[this.currentInfoIndex] || {};
+    },
+    handlePageChange(next) {
+      this.currentInfoIndex += (next ? 1 : -1);
+      this.$nextTick(() => this.assignUploadImageInfo());
+    },
     startUpload() {
       if (!(this.uploadImages.length > 0)) {
         return this.$message.error('至少选择一张图片');
@@ -323,8 +331,8 @@ new Vue({
           if (data.code !== 0) {
             return this.$message.error(data.msg || '图片上传功能异常');
           }
-
           this.uploadedImagesInfo = data.data || [];
+          this.assignUploadImageInfo();
           this.isShowUploadedDialog = true;
         })
         .catch(e => {

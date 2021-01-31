@@ -170,16 +170,17 @@ new Vue({
       isShowUploadedDialog: false,
       uploadedImagesInfo: uploadedImagesInfo,
       //: [],
-      currentInfoIndex: 0
+      currentInfoIndex: 0,
+      currentImageInfo: {}
     };
   },
   computed: {
     imageUploadLeft: function imageUploadLeft() {
       return this.maxImageNum - this.uploadImages.length;
-    },
-    currentImageInfo: function currentImageInfo() {
-      return this.uploadedImagesInfo[this.currentInfoIndex] || {};
     }
+  },
+  created: function created() {
+    this.assignUploadImageInfo();
   },
   methods: {
     assignStockDetails: function assignStockDetails(detail) {
@@ -414,8 +415,20 @@ new Vue({
         return true;
       });
     },
-    startUpload: function startUpload() {
+    assignUploadImageInfo: function assignUploadImageInfo() {
+      this.currentImageInfo = this.uploadedImagesInfo[this.currentInfoIndex] || {};
+      console.log(this.currentImageInfo);
+    },
+    handlePageChange: function handlePageChange(next) {
       var _this8 = this;
+
+      this.currentInfoIndex += next ? 1 : -1;
+      this.$nextTick(function () {
+        return _this8.assignUploadImageInfo();
+      });
+    },
+    startUpload: function startUpload() {
+      var _this9 = this;
 
       if (!(this.uploadImages.length > 0)) {
         return this.$message.error('至少选择一张图片');
@@ -438,24 +451,27 @@ new Vue({
 
       var axiosConfig = {
         onUploadProgress: function onUploadProgress(progressEvent) {
-          _this8.uploadPercent = (progressEvent.loaded / progressEvent.total * 100).toFixed(1);
+          _this9.uploadPercent = (progressEvent.loaded / progressEvent.total * 100).toFixed(1);
         }
       };
       axios.post(window.updateByImgUrl, form, axiosConfig).then(function (res) {
         var data = res.data || {};
 
         if (data.code !== 0) {
-          return _this8.$message.error(data.msg || '图片上传功能异常');
+          return _this9.$message.error(data.msg || '图片上传功能异常');
         }
 
-        _this8.uploadedImagesInfo = data.data || [];
-        _this8.isShowUploadedDialog = true;
+        _this9.uploadedImagesInfo = data.data || [];
+
+        _this9.assignUploadImageInfo();
+
+        _this9.isShowUploadedDialog = true;
       })["catch"](function (e) {
         console.error(e);
 
-        _this8.$message.error(e.msg || '上传功能异常');
+        _this9.$message.error(e.msg || '上传功能异常');
       }).then(function () {
-        return _this8.isLoading = false;
+        return _this9.isLoading = false;
       });
     }
   }
