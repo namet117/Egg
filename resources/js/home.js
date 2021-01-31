@@ -3,7 +3,7 @@ new Vue({
   data() {
     let fixedIndex = localStorage.getItem('egg-table-fixed-index');
     // For Test
-    let uploadedImagesInfo = JSON.parse('[{"url":"/storage/upload/20210129/8d9b56e4dc5361c81011ace1b3d161ea.png","data":false},{"url":"/storage/upload/20210129/f06b4e10344ef8b000f4f4ef811f82c8.png","code":"001593","name":"天弘创业板ETF联接基金C","cate1":"指数","request":"http://127.0.0.1:8000/userStock/41","method":"PUT","data":{"old":{"cost":"1.2011","hold_num":"3330.29"},"new":{"cost":"1.0464","hold_num":"955.66"}}},{"url":"/storage/upload/20210129/bd62e94d9204595cb313fc7390c159ad.png","code":"161724","name":"招商中证煤炭等权指数分级","cate1":"煤炭","request":"http://127.0.0.1:8000/userStock/78","method":"DELETE","data":{"old":{"cost":"1.0264","hold_num":"6820.18"},"new":{"cost":"0.0000","hold_num":"2233.08"}}}]');
+    let uploadedImagesInfo = JSON.parse('[{"url":"/storage/upload/20210131/bc9945428f8111c9736d820e9ce7f670.png","code":"501018","name":"南方原油A","cate1":"原油","request":"http://dev.namet.xyz:10000/userStock/31","method":"PUT","data":{"old":{"cost":"0.8101","hold_num":"9875.21"},"new":{"cost":"0.8101","hold_num":"9875.21"}}},{"url":"/storage/upload/20210131/7b3c5829ab095d8427944748e68391e1.png","code":"008087","name":"华夏中证5G通信主题ETF联接C","cate1":"5G","request":"http://dev.namet.xyz:10000/userStock/26","method":"PUT","data":{"old":{"cost":"1.2511","hold_num":"3885.60"},"new":{"cost":"1.2384","hold_num":"4733.06"}}},{"url":"/storage/upload/20210131/18a4a5aaf1054de367766bce8a53141b.png","code":"000083","name":"汇添富消费行业混合","cate1":"消费","request":"http://dev.namet.xyz:10000/userStock/72","method":"PUT","data":{"old":{"cost":"7.5916","hold_num":"1510.76"},"new":{"cost":"8.8972","hold_num":"224.79"}}}]');
     return {
       tableHeight: navigator.userAgent.toLowerCase().indexOf('andriod') > -1 ? '90vh' : '97.5vh',
       stocks: JSON.parse(window.originalStocks) || [],
@@ -64,7 +64,7 @@ new Vue({
       toUpdated: [],
 
       isShowUploadedDialog: false,
-      uploadedImagesInfo,//: [],
+      uploadedImagesInfo, // : [],
       currentInfoIndex: 0,
       currentImageInfo: {},
     }
@@ -72,6 +72,20 @@ new Vue({
   computed: {
     imageUploadLeft() {
       return this.maxImageNum - this.uploadImages.length;
+    },
+    saveUploadedInfoBtnTxt() {
+      switch (true) {
+        case this.isLoading:
+          return '处理中..';
+        case this.currentImageInfo.method === 'DELETE':
+          return '删除';
+        case this.currentImageInfo.method === 'PUT':
+          return '更新';
+        case this.currentImageInfo.method === 'POST':
+          return '新增';
+        default:
+          return 'Error';
+      }
     },
   },
   created() {
@@ -119,7 +133,12 @@ new Vue({
         type: 'warning',
       })
         .then(() => {
-          this.sendRequest('delete', url);
+          this.sendRequest('delete', url)
+            .then(b => {
+              if (b) {
+                setTimeout(() => location.reload(), 666);
+              }
+            });
         })
         .catch(() => { });
     },
@@ -133,7 +152,12 @@ new Vue({
         let url = this.isUpdate ? this.updateUrl : this.storeUrl,
           method = this.isUpdate ? 'put' : 'post';
 
-        this.sendRequest(method, url, this.stockDetail);
+        this.sendRequest(method, url, this.stockDetail)
+          .then(b => {
+            if (b) {
+              setTimeout(() => location.reload(), 666);
+            }
+          });
       })
     },
 
@@ -145,7 +169,7 @@ new Vue({
       })
         .then(response => {
           this.$message.success('操作成功');
-          setTimeout(() => location.reload(), 666);
+          return true;
         })
         .catch(error => {
           this.isLoading = false;
@@ -163,6 +187,7 @@ new Vue({
             msg.push(errors[v][0]);
           });
           this.$message.error(msg.join('；'));
+          return false;
         });
     },
 
@@ -296,13 +321,6 @@ new Vue({
         return true;
       });
     },
-    assignUploadImageInfo() {
-      this.currentImageInfo = this.uploadedImagesInfo[this.currentInfoIndex] || {};
-    },
-    handlePageChange(next) {
-      this.currentInfoIndex += (next ? 1 : -1);
-      this.$nextTick(() => this.assignUploadImageInfo());
-    },
     startUpload() {
       if (!(this.uploadImages.length > 0)) {
         return this.$message.error('至少选择一张图片');
@@ -340,6 +358,39 @@ new Vue({
           this.$message.error(e.msg || '上传功能异常');
         })
         .then(() => this.isLoading = false);
-    }
+    },
+    assignUploadImageInfo() {
+      let info = this.uploadedImagesInfo[this.currentInfoIndex] || {},
+        data = info.data || {};
+      if (data.new) {
+        info['cost'] = info.data.new.cost;
+        info['hold_num'] = info.data.new.hold_num;
+      }
+      info.old = data.old || false;
+      this.currentImageInfo = info;
+    },
+    handlePageChange(next) {
+      this.currentInfoIndex += (next ? 1 : -1);
+      this.$nextTick(() => this.assignUploadImageInfo());
+    },
+    saveUploaded() {
+      this.$refs['uploadedInfo'].validate(res => {
+        if (!res) {
+          return ;
+        }
+        this.isLoading = true;
+        this.sendRequest(this.currentImageInfo.method, this.currentImageInfo.request, this.currentImageInfo)
+          .then(() => this.isLoading = false);
+      });
+    },
+    closeUploadedDialog() {
+      if (this.currentInfoIndex == (this.uploadedImagesInfo.length - 1)) {
+        location.reload();
+        return this.isShowUploadedDialog = false;
+      }
+      this.$confirm('还未全部确认，是否关闭？', '')
+        .then(() => location.reload())
+        .catch(() => {});
+    },
   },
 });

@@ -244,7 +244,11 @@ class StockController extends Controller
                 $row['code'] = $stock->code;
                 $row['name'] = $stock->name;
                 $row['cate1'] = '';
-                if ($detail = UserStock::whereStockId($stock->id)->first()) {
+                $where = [
+                    'stock_id' => $stock->id,
+                    'user_id' => Auth::id(),
+                ];
+                if ($detail = UserStock::whereStockId($where)->first()) {
                     $data['old'] = [
                         'cost' => $detail->cost,
                         'hold_num' => $detail->hold_num,
@@ -269,7 +273,7 @@ class StockController extends Controller
             $row['data'] = $data ?: false;
             $result[] = $row;
         }
-
+\Log::info(json_encode($result));
         return ['code' => 0, 'data' => $result, 'msg' => '识别成功'];
     }
 }

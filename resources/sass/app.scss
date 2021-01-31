@@ -36,6 +36,12 @@
         width: 30%;
       }
     }
+    .el-form-item {
+      margin-bottom: 5px;
+      .el-form-item__error {
+        z-index: 2;
+      }
+    }
   }
   &-preview-image {
     .el-dialog {
