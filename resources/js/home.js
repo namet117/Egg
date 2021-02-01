@@ -2,8 +2,6 @@ new Vue({
   el: '#egg',
   data() {
     let fixedIndex = localStorage.getItem('egg-table-fixed-index');
-    // For Test
-    let uploadedImagesInfo = JSON.parse('[{"url":"/storage/upload/20210131/bc9945428f8111c9736d820e9ce7f670.png","code":"501018","name":"南方原油A","cate1":"原油","request":"http://dev.namet.xyz:10000/userStock/31","method":"PUT","data":{"old":{"cost":"0.8101","hold_num":"9875.21"},"new":{"cost":"0.8101","hold_num":"9875.21"}}},{"url":"/storage/upload/20210131/7b3c5829ab095d8427944748e68391e1.png","code":"008087","name":"华夏中证5G通信主题ETF联接C","cate1":"5G","request":"http://dev.namet.xyz:10000/userStock/26","method":"PUT","data":{"old":{"cost":"1.2511","hold_num":"3885.60"},"new":{"cost":"1.2384","hold_num":"4733.06"}}},{"url":"/storage/upload/20210131/18a4a5aaf1054de367766bce8a53141b.png","code":"000083","name":"汇添富消费行业混合","cate1":"消费","request":"http://dev.namet.xyz:10000/userStock/72","method":"PUT","data":{"old":{"cost":"7.5916","hold_num":"1510.76"},"new":{"cost":"8.8972","hold_num":"224.79"}}}]');
     return {
       tableHeight: navigator.userAgent.toLowerCase().indexOf('andriod') > -1 ? '90vh' : '97.5vh',
       stocks: JSON.parse(window.originalStocks) || [],
@@ -64,9 +62,9 @@ new Vue({
       toUpdated: [],
 
       isShowUploadedDialog: false,
-      uploadedImagesInfo, // : [],
+      uploadedImagesInfo: [],
       currentInfoIndex: 0,
-      currentImageInfo: {},
+      currentImageInfo: false,
     }
   },
   computed: {
@@ -87,9 +85,6 @@ new Vue({
           return 'Error';
       }
     },
-  },
-  created() {
-    this.assignUploadImageInfo();
   },
   methods: {
     assignStockDetails(detail) {
@@ -172,6 +167,7 @@ new Vue({
           return true;
         })
         .catch(error => {
+  console.log(error.response);
           this.isLoading = false;
           if (
             !error.response
@@ -363,8 +359,8 @@ new Vue({
       let info = this.uploadedImagesInfo[this.currentInfoIndex] || {},
         data = info.data || {};
       if (data.new) {
-        info['cost'] = info.data.new.cost;
-        info['hold_num'] = info.data.new.hold_num;
+        info['cost'] = Number(info.data.new.cost);
+        info['hold_num'] = Number(info.data.new.hold_num);
       }
       info.old = data.old || false;
       this.currentImageInfo = info;
@@ -374,6 +370,7 @@ new Vue({
       this.$nextTick(() => this.assignUploadImageInfo());
     },
     saveUploaded() {
+      console.log(this.currentImageInfo);
       this.$refs['uploadedInfo'].validate(res => {
         if (!res) {
           return ;

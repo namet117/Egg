@@ -21,6 +21,10 @@
 </div>
 
 {{--底部JS代码--}}
+@env('local')
+<script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.3.4/vconsole.min.js"></script>
+<script>var vConsole = new VConsole();</script>
+@endenv
 <script src="{{ mix('js/app.js') }}"></script>
 @section('custom_footer')
   <script>

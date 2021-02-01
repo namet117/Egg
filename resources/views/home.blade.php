@@ -139,9 +139,7 @@
     <img width="100%" :src="previewImage" alt="">
   </el-dialog>
 
-{{--  For Test--}}
- {{--  <div class="t-upload-btn el-backtop" @click="isShowUploadDialog = true"> --}}
- <div class="t-upload-btn el-backtop" @click="isShowUploadedDialog = true">
+  <div class="t-upload-btn el-backtop" @click="isShowUploadDialog = true">
     <i class="el-icon-upload"></i>
   </div>
 
@@ -224,6 +222,7 @@
     </div>
   </el-dialog>
 
+  <template v-if="currentImageInfo">
   <el-dialog
     :title="`更新内容确认${currentInfoIndex + 1}/${uploadedImagesInfo.length}`"
     :visible.sync="isShowUploadedDialog"
@@ -262,6 +261,7 @@
       <el-button type="primary" icon="el-icon-d-arrow-right" :disabled="currentInfoIndex === (uploadedImagesInfo.length - 1)" @click="handlePageChange(true)"></el-button>
     </div>
   </el-dialog>
+  </template>
 
 @endsection
 
