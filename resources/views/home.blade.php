@@ -222,7 +222,7 @@
     </div>
   </el-dialog>
 
-  <template v-if="currentImageInfo">
+<template v-if="currentImageInfo">
   <el-dialog
     :title="`更新内容确认${currentInfoIndex + 1}/${uploadedImagesInfo.length}`"
     :visible.sync="isShowUploadedDialog"
@@ -261,7 +261,14 @@
       <el-button type="primary" icon="el-icon-d-arrow-right" :disabled="currentInfoIndex === (uploadedImagesInfo.length - 1)" @click="handlePageChange(true)"></el-button>
     </div>
   </el-dialog>
-  </template>
+
+  {{-- Preload Image --}}
+  <div style="display: none;">
+    <template v-for="(uploadedItem, key) in uploadedImagesInfo">
+      <img :src="uploadedItem.url" alt="preview">
+    </template>
+  </div>
+</template>
 
 @endsection
 
