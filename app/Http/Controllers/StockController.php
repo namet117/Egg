@@ -248,7 +248,7 @@ class StockController extends Controller
                     'stock_id' => $stock->id,
                     'user_id' => Auth::id(),
                 ];
-                if ($detail = UserStock::whereStockId($where)->first()) {
+                if ($detail = UserStock::where($where)->first()) {
                     $data['old'] = [
                         'cost' => $detail->cost,
                         'hold_num' => $detail->hold_num,
