@@ -241,7 +241,7 @@
         </el-form-item>
         <el-form-item label="板块" prop="cate1">
           <span v-if="currentImageInfo.cate1">@{{ currentImageInfo.cate1 }}</span>
-          <el-input maxlength="10" show-word-limit v-else v-model="currentImageInfo.cate1"></el-input>
+          <el-input maxlength="10" show-word-limit v-else v-model="currentImageInfo.newCate1"></el-input>
         </el-form-item>
         <el-form-item label="成本" prop="cost">
           <span v-if="currentImageInfo.old.cost">@{{ currentImageInfo.old.cost }} -&gt; </span>
