@@ -63,7 +63,7 @@ class OcrService
         return $ocr->save();
     }
 
-    private function extractInfoFromWords($response): array
+    public function extractInfoFromWords($response): array
     {
         if (!is_array($response) || empty($response['words_result']) || !is_array($response['words_result'])) {
             return [];
@@ -74,11 +74,13 @@ class OcrService
         }
         $result = [];
         foreach ($words as $word) {
-            $word = str_replace([','], '', $word);
-            if (preg_match('/^持仓成本价\d+\.\d+$/', $word)) {
+            $word = str_replace([',', '.'], '', $word);
+            if (preg_match('/^持仓成本价\d+$/', $word)) {
                 $result['cost'] = Helper::extractNumberFromString($word);
-            } elseif (preg_match('/^持有份额\d+\.\d+$/', $word)) {
+                $result['cost'] = substr($result['cost'], 0, -4) . '.' . substr($result['cost'], -4);
+            } elseif (preg_match('/^持有份额\d+$/', $word)) {
                 $result['hold_num'] = Helper::extractNumberFromString($word);
+                $result['hold_num'] = substr($result['hold_num'], 0, -2) . '.' . substr($result['hold_num'], -2);
             } elseif (preg_match('/^\d{6}.+风险$/', $word)) {
                 $result['code'] = mb_substr($word, 0, 6);
             }
