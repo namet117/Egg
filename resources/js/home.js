@@ -363,7 +363,7 @@ new Vue({
         info['hold_num'] = Number(info.data.new.hold_num);
       }
       info.old = data.old || false;
-      info.newCate1 = data.cate1;
+      info.newCate1 = info.cate1 + '';
       this.currentImageInfo = info;
     },
     handlePageChange(next) {
@@ -372,7 +372,7 @@ new Vue({
     },
     saveUploaded() {
       console.log(this.currentImageInfo);
-      this.currentImageInfo.cate1 = this.currentImageInfo.newCate1;
+      this.currentImageInfo.cate1 = this.currentImageInfo.newCate1 + '';
       this.$refs['uploadedInfo'].validate(res => {
         if (!res) {
           return ;
