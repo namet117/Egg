@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Models\Stock;
+use App\Models\Stock;
 use Illuminate\Console\Command;
 
 class RefreshAllStocks extends Command
@@ -48,7 +48,8 @@ class RefreshAllStocks extends Command
         $url = 'http://fund.eastmoney.com/js/fundcode_search.js';
         $content = file_get_contents($url);
         if (empty($content)) {
-            $this->error('get fund list from: ' . $url . ' failed!');
+            $this->error('get fund list from: '.$url.' failed!');
+
             return false;
         }
         $json = str_replace(['varr=', ';', "\r\n", "\n"], '', str_replace(' ', '', $content));
@@ -57,7 +58,8 @@ class RefreshAllStocks extends Command
         }
         $rows = json_decode($json, true);
         if (empty($rows)) {
-            $this->error('json decode failed, error: ' . json_last_error_msg());
+            $this->error('json decode failed, error: '.json_last_error_msg());
+
             return false;
         }
 
@@ -77,16 +79,16 @@ class RefreshAllStocks extends Command
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ]);
-                $created_num++;
+                ++$created_num;
             } else {
-                $ignore_num++;
+                ++$ignore_num;
             }
             if (count($data) > 200) {
                 Stock::insert($data);
                 $data = [];
             }
             echo "\r";
-            $k += 1;
+            ++$k;
             echo "{$k}/{$total_num}: {$where['code']}";
         }
         if ($data) {
