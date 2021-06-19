@@ -1,18 +1,16 @@
 {
-    "name": "hyperf/hyperf-skeleton",
+    "name": "namet/egg",
     "type": "project",
     "keywords": [
-        "php",
-        "swoole",
-        "framework",
-        "hyperf",
-        "microservice",
-        "middleware"
+        "egg",
+        "namet",
+        "stock",
+        "share"
     ],
-    "description": "A coroutine framework that focuses on hyperspeed and flexible, specifically use for build microservices and middlewares.",
-    "license": "Apache-2.0",
+    "description": "eggs",
+    "license": "MIT",
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.4",
         "hyperf/async-queue": "~2.1.0",
         "hyperf/cache": "~2.1.0",
         "hyperf/command": "~2.1.0",
@@ -76,6 +74,10 @@
         "start": [
             "Composer\\Config::disableProcessTimeout",
             "php ./bin/hyperf.php start"
+        ],
+        "watch": [
+            "Composer\\Config::disableProcessTimeout",
+            "php ./bin/hyperf.php server:watch"
         ]
     }
 }
