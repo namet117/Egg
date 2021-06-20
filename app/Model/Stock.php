@@ -34,7 +34,9 @@ class Stock extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'open', 'estimate', 'real', 'estimate_date', 'real_date', 'estimate_ratio', 'real_ratio',
+    ];
     /**
      * The attributes that should be cast to native types.
      *

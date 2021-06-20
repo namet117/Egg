@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Constants\StatusConst;
+use App\Exception\EggException;
+use App\Service\Auth;
 use App\Traits\Response;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,26 +31,25 @@ class AuthCheck implements MiddlewareInterface
     protected $container;
 
     /**
-     * @var \App\Service\Token
+     * @var \App\Service\Auth
      */
-    private $token;
+    private $auth;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, Auth $auth)
     {
         $this->container = $container;
-        $this->token = $token;
+        $this->auth = $auth;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $token = $request->getHeaderLine('authorization');
-        $is_init = in_array($request->getUri()->getPath(), self::WHITELIST);
-        if (!$this->token->checkToken($token) && !$is_init) {
+        $this->auth->setToken($request->getHeaderLine('egg-token') ?: '');
+        $ignore = in_array($request->getUri()->getPath(), self::WHITELIST);
+        if (!$ignore && (!$this->auth->checkToken() /*|| !$this->auth->isLogin()*/)) {
             throw new EggException(StatusConst::getMessage(StatusConst::NEED_LOGIN), StatusConst::NEED_LOGIN);
         }
-
         $response = $handler->handle($request);
-        $this->token->saveTokenInfo();
+        $this->auth->saveTokenInfo();
 
         return $response;
     }

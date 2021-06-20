@@ -26,7 +26,9 @@ class UserOauth extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'openid', 'unionid', 'session_key', 'user_id',
+    ];
     /**
      * The attributes that should be cast to native types.
      *

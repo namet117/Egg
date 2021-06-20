@@ -25,7 +25,9 @@ class StockPrice extends Model
      *
      * @var array
      */
-    protected $fillable = [];
+    protected $fillable = [
+        'stock_id', 'day', 'price',
+    ];
     /**
      * The attributes that should be cast to native types.
      *

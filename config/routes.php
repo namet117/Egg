@@ -4,4 +4,7 @@ declare(strict_types=1);
 
 use Hyperf\HttpServer\Router\Router;
 
-Router::post('/init', 'App\Controller\IndexController@init');
+// JS code登录
+Router::post('/init', 'App\Controller\AuthController@init');
+
+Router::post('/user/stocks', 'App\Controller\UserController@getUserStocks');
