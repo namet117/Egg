@@ -13,7 +13,7 @@ class UserController extends AbstractController
 {
     /**
      * @Inject
-     * @var \App\Service\Auth;
+     * @var \App\Service\Auth
      */
     private $auth;
 
