@@ -16,4 +16,9 @@ class StatusConst extends AbstractConstants
      * @Message("Need Login")
      */
     const NEED_LOGIN = 999;
+
+    /**
+     * @Message("No Token")
+     */
+    const NO_TOKEN = 998;
 }

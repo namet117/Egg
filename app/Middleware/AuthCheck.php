@@ -22,7 +22,8 @@ class AuthCheck implements MiddlewareInterface
      * 不检查Token的path白名单.
      */
     const WHITELIST = [
-        '/init',
+        '/signInByCode',
+        '/signInByPassword',
     ];
 
     /**
@@ -43,9 +44,13 @@ class AuthCheck implements MiddlewareInterface
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $this->auth->setToken($request->getHeaderLine('egg-token') ?: '');
+        $token = $request->getHeaderLine('egg-token') ?: '';
         $ignore = in_array($request->getUri()->getPath(), self::WHITELIST);
-        if (!$ignore && (!$this->auth->checkToken() /*|| !$this->auth->isLogin()*/)) {
+        if (!$this->auth->checkToken($token)) {
+            throw new EggException(StatusConst::getMessage(StatusConst::NO_TOKEN), StatusConst::NO_TOKEN);
+        }
+        $this->auth->setToken($token);
+        if (!$ignore && !$this->auth->isLogin()) {
             throw new EggException(StatusConst::getMessage(StatusConst::NEED_LOGIN), StatusConst::NEED_LOGIN);
         }
         $response = $handler->handle($request);

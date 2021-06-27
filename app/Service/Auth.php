@@ -27,20 +27,24 @@ class Auth
         return self::USER_KEY.$token;
     }
 
+    public function validate(string $token = ''): bool
+    {
+        return \strlen($token) >= 55;
+    }
+
     public function checkToken(string $token = ''): bool
     {
         $token = $token ?: $this->getToken();
-        if (strlen($token) !== 55) {
+        if (!$this->validate($token)) {
             return false;
         }
-
         return $this->getRedis()->exists($this->createKey($token));
     }
 
     public function createToken(bool $save = true): string
     {
         list($usec, $sec) = explode(' ', microtime());
-        $token = sha1($sec . $usec) . uniqid('', true);
+        $token = sha1($sec.$usec).uniqid('', true);
         $save && $this->setToken($token);
 
         return $token;
@@ -79,10 +83,11 @@ class Auth
 
     public function saveTokenInfo(): bool
     {
-        if (!$this->getToken()) {
+        $token = $this->getToken();
+        if (!$token) {
             return false;
         }
-        return $this->getRedis()->set($this->createKey($this->getToken()), serialize($this->getTokenInfo()), 1800);
+        return $this->getRedis()->set($this->createKey($token), serialize($this->getTokenInfo()), 180);
     }
 
     public function login(int $id): void
