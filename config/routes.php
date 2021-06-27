@@ -6,5 +6,6 @@ use Hyperf\HttpServer\Router\Router;
 
 // JS code登录
 Router::post('/init', 'App\Controller\AuthController@init');
+Router::post('/signInByCode', 'App\Controller\AuthController@signInByCode');
 
 Router::post('/user/stocks', 'App\Controller\UserController@getUserStocks');
