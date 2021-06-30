@@ -39,6 +39,6 @@ class UserStock extends Model
 
     public function stocks()
     {
-        return $this->belongsTo(Stock::class);
+        return $this->hasOne(Stock::class, 'id', 'stock_id');
     }
 }

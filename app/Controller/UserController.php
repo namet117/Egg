@@ -17,13 +17,16 @@ class UserController extends AbstractController
      */
     private $auth;
 
-
     public function getUserStocks()
     {
-        $rows = UserStock::where(['user_id' => $this->auth->id()])->with('stocks')->get()->toArray();
+        $rows = UserStock::where(['user_id' => $this->auth->id()])->with('stocks')->get();
+        if ($rows->isEmpty()) {
+            return $this->success([], '暂无持仓信息');
+        }
+        $rows = $rows->toArray();
         $estimate_date = $real_date = [];
 
-        $groups = $stocks = [];
+        $stocks = [];
         $total_cost = $total_profit = 0;
         $estimate_amount = $real_amount = [];
         foreach ($rows as $row) {
@@ -57,13 +60,13 @@ class UserController extends AbstractController
             // 持仓成本金额
             $row['cost_amount'] = (float)bcmul($row['cost'], $row['hold_num'], 2);
             // 持仓收益率
-            $row['profit_ratio'] = Calc::percent($row['cost'], $row['stocks']['real']);
+            $row['profit_ratio'] = Calc::percent(floatval($row['cost']), floatval($row['stocks']['real']));
             // 持仓收益金额
             $row['profit_amount'] = (float)bcmul($row['hold_num'], bcsub($row['stocks']['real'], $row['cost'], 4), 2);
             // 总持仓成本金额
-            $total_cost = (float)bcadd($total_cost, (string)$row['cost_amount'], 2);
+            $total_cost = (float)bcadd((string)$total_cost, (string)$row['cost_amount'], 2);
             // 总收益金额
-            $total_profit = (float)bcadd($total_profit, (string)$row['profit_amount'], 2);
+            $total_profit = (float)bcadd((string)$total_profit, (string)$row['profit_amount'], 2);
             // 格式化数据
             $row['stocks']['estimate_ratio'] = (float)$row['stocks']['estimate_ratio'];
             $row['stocks']['real_ratio'] = (float)$row['stocks']['real_ratio'];
@@ -97,17 +100,11 @@ class UserController extends AbstractController
             $estimate_amount[$row['stocks']['estimate_date']] = $estimate_amount[$row['stocks']['estimate_date']] ?? 0;
             $real_amount[$row['stocks']['real_date']] = $real_amount[$row['stocks']['real_date']] ?? 0;
 
-            // 合并单元格分组
-            if ($row['cate1']) {
-                $groups[$row['cate1']][] = $row;
-            } else {
-                $groups[] = [$row];
-            }
             $stocks[] = array_merge(
                 Arr::only(
                     $row,
                     [
-                        'id', 'cate1', 'cate2', 'cost', 'hold_num', 'cost_amount', 'profit_amount', 'profit_ratio',
+                        'cate1', 'cost', 'hold_num', 'cost_amount', 'profit_amount', 'profit_ratio',
                         'real_date', 'estimate_date', 'last_real', 'today_estimate', 'today_real',
                     ]
                 ),
@@ -120,9 +117,14 @@ class UserController extends AbstractController
         $today_date = date('m-d');
         $t_real_date = !empty($real_date[$today_date]) ? $today_date : ($real_date ? key($real_date) : '');
         $t_estimate_date = !empty($estimate_date[$today_date]) ? $today_date : ($estimate_date ? key($real_date) : '');
-        $groups = array_values($groups);
 
-        $data = compact('groups', 'total_cost', 'total_profit', 'stocks', 't_real_date', 't_estimate_date');
+        $data = compact('total_cost', 'total_profit', 'stocks', 't_real_date', 't_estimate_date');
 
         return $this->success($data, '读取成功');
-    }}
+    }
+
+    public function updateStock()
+    {
+
+    }
+}
