@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use _HumbugBox2acd634d137b\Nette\Neon\Exception;
+use App\Constants\StatusConst;
 use Hyperf\Di\Annotation\Inject;
 
 class AuthController extends AbstractController
@@ -30,14 +31,7 @@ class AuthController extends AbstractController
      */
     private $mpService;
 
-    public function init()
-    {
-        return $this->success([
-            'id' => $this->auth->id(),
-        ]);
-    }
-
-    public function signInByCode()
+    public function loginByWxCode()
     {
         $code = $this->request->post('code', '');
         if (!$code) {
@@ -48,15 +42,16 @@ class AuthController extends AbstractController
         }
         $data = $this->mpService->code2User($code);
         if (!$data) {
-            return $this->failed('读取用户ID失败');
+            return $this->failed('读取用户ID失败', StatusConst::LOGIN_FAIL);
         }
-        if ($data['user_id']) {
-            $this->auth->login($data['user_id']);
+        if (!$data['user_id'] && !$this->userService->createNewAccount([], $data)) {
+            return $this->failed('创建用户id失败', StatusConst::LOGIN_FAIL);
         }
+        $this->auth->login($data['user_id']);
         return $this->success(['id' => $data['user_id']]);
     }
 
-    public function signInByPassword()
+    public function loginByPassword()
     {
         $name = str_replace(' ', '', $this->request->post('name'));
         $password = str_replace(' ', '', $this->request->post('password'));
@@ -66,11 +61,6 @@ class AuthController extends AbstractController
         $id = $this->userService->tryLogin($name, $password);
 
         return $this->success(compact('id'), '登录成功');
-    }
-
-    public function signUpId()
-    {
-
     }
 
     public function signUpByPassword()

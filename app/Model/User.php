@@ -9,6 +9,7 @@ namespace App\Model;
  * @property string         $name
  * @property string         $password
  * @property int            $custom     手动注册账号
+ * @property \Carbon\Carbon $login_at   最后登录时间
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -26,12 +27,18 @@ class User extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'password', 'custom',
+        'name', 'password', 'custom', 'login_at',
     ];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-    protected $casts = ['id' => 'integer', 'custom' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = [
+        'id' => 'integer',
+        'custom' => 'integer',
+        'login_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }

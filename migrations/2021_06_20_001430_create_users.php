@@ -16,6 +16,7 @@ class CreateUsers extends Migration
             $table->string('name');
             $table->string('password');
             $table->tinyInteger('custom')->default(0)->comment('手动注册账号');
+            $table->timestamp('login_at')->nullable()->comment('最后登录时间');
             $table->timestamps();
         });
     }

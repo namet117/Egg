@@ -21,4 +21,9 @@ class StatusConst extends AbstractConstants
      * @Message("No Token")
      */
     const NO_TOKEN = 998;
+
+    /**
+     * @Message("login failed")
+     */
+    const LOGIN_FAIL = 700;
 }

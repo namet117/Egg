@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Hyperf\HttpServer\Router\Router;
 
 // JS code登录
-Router::post('/init', 'App\Controller\AuthController@init');
-Router::post('/signInByCode', 'App\Controller\AuthController@signInByCode');
+Router::post('/init', 'App\Controller\AuthController@loginByWxCode');
 
 Router::post('/user/stocks', 'App\Controller\UserController@getUserStocks');

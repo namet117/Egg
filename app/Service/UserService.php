@@ -6,6 +6,8 @@ namespace App\Service;
 use App\Exception\EggException;
 use App\Model\User;
 use App\Model\UserOauth;
+use Hyperf\DbConnection\Db;
+use function PHPUnit\Framework\throwException;
 
 class UserService
 {
@@ -21,21 +23,38 @@ class UserService
         return $user->id;
     }
 
-    public function createNewAccount(array $data, bool $login = true): int
+    public function createNewAccount(array $data, array $oauth, bool $login = true): int
     {
-        $data['custom'] = 1;
-        $data['password'] = $this->encryptPassword($data['password']);
-        $user = User::create($data);
-        if (!$user->save()) throw new EggException('创建用户失败，请重试');
-        $login && $this->loginById($user->id);
+        Db::beginTransaction();
+        try {
+            $data['name'] = $data['name'] ?? '';
+            $data['password'] = $this->encryptPassword($data['password'] ?? $this->createDefaultPassword());
+            $user = User::create($data);
+            if (!$user->save()) throw new EggException('创建用户失败，请重试');
 
-        return $user->id;
+            $oauth_user = UserOauth::create($oauth);
+            $oauth_user->user_id = $user->id;
+            if (!$oauth_user) throw new EggException('保存用户扩展信息失败，请重试');
+
+            $login && $this->loginById($user->id);
+            Db::commit();
+            return $user->id;
+        } catch (EggException $e) {
+            Db::rollBack();
+            return 0;
+        }
+    }
+
+    private function createDefaultPassword(): string
+    {
+        return 'egg' . mt_rand(1000, 9999) . chr(random_int(65, 90));
     }
 
     public function loginById(int $id): bool
     {
         $auth = new Auth;
         $auth->login($id);
+        User::where('id', $id)->update(['login_at' => date('Y-m-d H:i:s')]);
         $info = $auth->getTokenInfo();
         if ($info['mp']) {
             UserOauth::updateOrCreate(
