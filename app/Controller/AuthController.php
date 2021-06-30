@@ -31,6 +31,13 @@ class AuthController extends AbstractController
      */
     private $mpService;
 
+    public function status()
+    {
+        return $this->auth->isLogin()
+            ? $this->success(['id' => $this->auth->id()], '已登录')
+            : $this->failed('未登录');
+    }
+
     public function loginByWxCode()
     {
         $code = $this->request->post('code', '');
@@ -44,7 +51,8 @@ class AuthController extends AbstractController
         if (!$data) {
             return $this->failed('读取用户ID失败', StatusConst::LOGIN_FAIL);
         }
-        if (!$data['user_id'] && !$this->userService->createNewAccount([], $data)) {
+        $user = ['name' => $data['openid']];
+        if (!$data['user_id'] && !$this->userService->createNewAccount($user, $data)) {
             return $this->failed('创建用户id失败', StatusConst::LOGIN_FAIL);
         }
         $this->auth->login($data['user_id']);

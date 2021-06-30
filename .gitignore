@@ -13,3 +13,4 @@ vendor/
 *.cache
 composer.lock
 nohup.out
+.vscode/

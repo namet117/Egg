@@ -87,7 +87,7 @@ class Auth
         if (!$token) {
             return false;
         }
-        return $this->getRedis()->set($this->createKey($token), serialize($this->getTokenInfo()), 180);
+        return $this->getRedis()->set($this->createKey($token), serialize($this->getTokenInfo()), 1800);
     }
 
     public function login(int $id): void

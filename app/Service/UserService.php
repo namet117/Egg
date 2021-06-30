@@ -32,9 +32,9 @@ class UserService
             $user = User::create($data);
             if (!$user->save()) throw new EggException('创建用户失败，请重试');
 
+            $oauth['user_id'] = $user->id;
             $oauth_user = UserOauth::create($oauth);
-            $oauth_user->user_id = $user->id;
-            if (!$oauth_user) throw new EggException('保存用户扩展信息失败，请重试');
+            if (!$oauth_user->save()) throw new EggException('保存用户扩展信息失败，请重试');
 
             $login && $this->loginById($user->id);
             Db::commit();

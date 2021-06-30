@@ -26,9 +26,9 @@ class WechatMP
     {
         $info = $this->code2Session($code);
         if (!$info) return [];
-        $user = UserOauth::where(['openid' => $info['openid']])->first();
+        $user = UserOauth::where('openid', $info['openid'])->first();
         if (!$user) return $info;
-        $info['user_id'] = $user->id;
+        $info['user_id'] = $user->user_id;
         if ($user->session_key !== $info['session_key']) {
             $user->session_key = $info['session_key'];
             $user->save();

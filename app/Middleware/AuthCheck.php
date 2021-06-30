@@ -22,8 +22,7 @@ class AuthCheck implements MiddlewareInterface
      * 不检查Token的path白名单.
      */
     const WHITELIST = [
-        '/loginByWxCode',
-        '/loginByPassword',
+        '/initWx',
     ];
 
     /**
@@ -61,7 +60,8 @@ class AuthCheck implements MiddlewareInterface
         $response = $handler->handle($request);
         $this->auth->saveTokenInfo();
         if ($with_token) {
-            $response = $response->withHeader('Egg-Token', $this->auth->getToken());
+            $response = $response->withHeader('Egg-Token', $this->auth->getToken())
+                ->withHeader('Server', 'Egg-Server');
         }
 
         return $response;
