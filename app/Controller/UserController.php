@@ -17,6 +17,12 @@ class UserController extends AbstractController
      */
     private $auth;
 
+    /**
+     * @Inject
+     * @var \App\Service\StockService
+     */
+    private $stockService;
+
     public function getUserStocks()
     {
         $rows = UserStock::where(['user_id' => $this->auth->id()])->with('stocks')->get();
@@ -125,6 +131,33 @@ class UserController extends AbstractController
 
     public function updateStock()
     {
+        $validator = $this->validationFactory->make(
+            $this->request->post(),
+            [
+                'code' => 'required|exists:stocks,code',
+                'type' => 'required|in:fund,etf,shares',
+                'price' => 'required|numeric|min:0|max:99999',
+                'num' => 'required|numeric|min:0|max:9999999',
+                'cate1' => 'nullable|string',
+            ],
+            [
+                'type.exists' => '未知的类型',
+            ],
+            [
+                'code' => '编码',
+                'type' => '类型',
+                'price' => '成本',
+                'num' => '持仓数',
+                'cate1' => '板块',
+            ]
+        );
+        if ($validator->fails()) {
+            return $this->failed($validator->errors()->first());
+        }
+        $data = $validator->validated();
+        $this->stockService->validate($data);
+        $this->stockService->save($this->auth->id(), $data['code'], $data['price'], $data['num'], $data['cate1']);
 
+        return $this->success([], '保存成功');
     }
 }
