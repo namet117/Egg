@@ -43,4 +43,10 @@ class Stock extends Model
      * @var array
      */
     protected $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+    const TYPE = [
+        'fund' => '场外基',
+        'etf' => 'ETF',
+        'shares' => '股票',
+    ];
 }
